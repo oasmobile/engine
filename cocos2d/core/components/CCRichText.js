@@ -185,7 +185,7 @@ var RichText = cc.Class({
          * !#en The image atlas for the img tag. For each src value in the img tag, there should be a valid spriteFrame in the image atlas.
          * !#zh 对于 img 标签里面的 src 属性名称，都需要在 imageAtlas 里面找到一个有效的 spriteFrame，否则 img tag 会判定为无效。
          * @property {SpriteAtlas} imageAtlas
-         */
+         *//*
         imageAtlas: {
             default: null,
             type: cc.SpriteAtlas,
@@ -196,7 +196,7 @@ var RichText = cc.Class({
                 this._layoutDirty = true;
                 this._updateRichTextStatus();
             }
-        },
+        },*/
 
         /**
          * !#en
@@ -536,7 +536,7 @@ var RichText = cc.Class({
 
     _addRichTextImageElement: function (richTextElement) {
         var spriteFrameName = richTextElement.style.src;
-        var spriteFrame = this.imageAtlas.getSpriteFrame(spriteFrameName);
+        var spriteFrame = cc.loader.getRes(spriteFrameName, cc.SpriteFrame);//this.imageAtlas.getSpriteFrame(spriteFrameName);
         if (spriteFrame) {
             var sprite = new cc.Scale9Sprite();
             sprite.setAnchorPoint(0, 0);
@@ -604,6 +604,16 @@ var RichText = cc.Class({
         }
 
         this._textArray = newTextArray;
+
+        let image_count = this._c_loadImages();
+        if (0 < image_count) return ;
+
+        this._c_updateRichText();
+    },
+
+
+    _c_updateRichText: function ()
+    {
         this._resetState();
 
         var lastEmptyLine = false;
@@ -619,7 +629,7 @@ var RichText = cc.Class({
                     this._updateLineInfo();
                     continue;
                 }
-                if (richTextElement.style && richTextElement.style.isImage && this.imageAtlas) {
+                if (richTextElement.style && richTextElement.style.isImage/* && this.imageAtlas*/) {
                     this._addRichTextImageElement(richTextElement);
                     continue;
                 }
@@ -828,7 +838,40 @@ var RichText = cc.Class({
             _ccsg.Label.pool.put(this._labelSegments[i]);
         }
         this._resetState();
-    }
+    },
+
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CUSTOM begin <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    _c_loadImages: function ()
+    {
+        let images = [];
+
+        for (let i = 0; i < this._textArray.length; ++i)
+        {
+            let richTextElement = this._textArray[i];
+            let text = richTextElement.text;
+            //handle <br/> <img /> tag
+            if (text === "")
+            {
+                if (richTextElement.style && richTextElement.style.isImage)
+                {
+                    images.push(richTextElement.style.src);
+                    continue;
+                }
+            }
+        } // end for
+
+        if (0 >= images.length) return 0;
+
+        let self = this;
+
+        cc.loader.loadResArray(images, cc.SpriteFrame, function (err, assets) {
+            self._c_updateRichText();
+        });
+
+        return images.length;
+    },
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CUSTOM end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 });
 
  cc.RichText = module.exports = RichText;
