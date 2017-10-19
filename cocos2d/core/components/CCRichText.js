@@ -535,35 +535,22 @@ var RichText = cc.Class({
     },
 
     _addRichTextImageElement: function (richTextElement) {
-        var spriteFrameName = richTextElement.style.src;
-        var spriteFrame = cc.loader.getRes(spriteFrameName, cc.SpriteFrame);//this.imageAtlas.getSpriteFrame(spriteFrameName);
+        if (CC_EDITOR) return ;
+
+        let spriteFrameName = richTextElement.style.src;
+        let image_src = this._c_parseImageSrc(spriteFrameName);
+        let sf_data = this._c_getSpriteFrameData(richTextElement, image_src);
+        let spriteFrame = sf_data.frames[sf_data.max_index].frame;//this.imageAtlas.getSpriteFrame(spriteFrameName);
         if (spriteFrame) {
-            var sprite = new cc.Scale9Sprite();
+            let sprite = new cc.Scale9Sprite();
             sprite.setAnchorPoint(0, 0);
             spriteFrame.__sprite = sprite;
             this._sgNode.addChild(sprite);
             this._labelSegments.push(sprite);
 
-            var spriteRect = spriteFrame.getRect();
-            var scaleFactor = 1;
-            var spriteWidth = spriteRect.width;
-            var spriteHeight = spriteRect.height;
-            var expectWidth = richTextElement.style.imageWidth;
-            var expectHeight = richTextElement.style.imageHeight;
-
-            //follow the original rule, expectHeight must less then lineHeight
-            if (expectHeight > 0 && expectHeight < this.lineHeight) {
-                scaleFactor = expectHeight / spriteHeight;
-                spriteWidth = spriteWidth * scaleFactor;
-                spriteHeight = spriteHeight * scaleFactor;
-            }
-            else {
-                scaleFactor = this.lineHeight / spriteHeight;
-                spriteWidth = spriteWidth * scaleFactor;
-                spriteHeight = spriteHeight * scaleFactor;
-            }
-
-            if (expectWidth > 0) spriteWidth = expectWidth;
+            let fix_size = sf_data.frames[0].fix_size;
+            let spriteWidth = fix_size.spriteWidth;
+            let spriteHeight = fix_size.spriteHeight;
 
             if (this.maxWidth > 0) {
                 if (this._lineOffsetX + spriteWidth > this.maxWidth) {
@@ -587,6 +574,8 @@ var RichText = cc.Class({
                     sprite._clickHandler = richTextElement.style.event.click;
                 }
             }
+
+            this._c_addStackSpriteFrames(sprite, sf_data)
         }
         else {
             cc.warnID(4400);
@@ -855,7 +844,8 @@ var RichText = cc.Class({
             {
                 if (richTextElement.style && richTextElement.style.isImage)
                 {
-                    images.push(richTextElement.style.src);
+                    let image_src = this._c_parseImageSrc(richTextElement.style.src);
+                    images = images.concat(image_src);
                     continue;
                 }
             }
@@ -870,6 +860,114 @@ var RichText = cc.Class({
         });
 
         return images.length;
+    },
+
+
+    _c_parseImageSrc: function (src)
+    {
+        let images = [];
+        while (true)
+        {
+            let index = src.indexOf('|');
+            if (-1 === index) break;
+
+            images.push(src.slice(0, index));
+            src = src.slice(index + 1, src.length);
+        }
+        images.push(src);
+
+        return images;
+    },
+
+
+    _c_getSpriteFrameData: function (richTextElement, src)
+    {
+        let sprite_frames = [];
+        let max_index = -1;
+
+        for (let i = 0; i < src.length; ++i)
+        {
+            let frame = cc.loader.getRes(src[i], cc.SpriteFrame);
+            if (!frame) continue;
+            let fix_size = this._c_fixSpriteFrameSize(richTextElement, frame);
+            sprite_frames.push({frame: frame, fix_size: fix_size});
+
+            if (-1 === max_index)
+            {
+                max_index = i;
+            }
+            else
+            {
+                if (fix_size.spriteWidth > sprite_frames[max_index].fix_size.spriteWidth)
+                {
+                    max_index = i;
+                }
+            }
+        }
+
+        return {frames:sprite_frames, max_index: max_index};
+    },
+
+
+    _c_addStackSpriteFrames: function (container, sf_data)
+    {
+        let sprite_frames = sf_data.frames;
+        let max_index = sf_data.max_index;
+        let container_size = sprite_frames[max_index].fix_size;
+
+        for (let i = 0; i < sprite_frames.length; ++i)
+        {
+            if (max_index === i) continue;
+
+            let spriteFrame = sprite_frames[i].frame;
+            let fix_size = sprite_frames[i].fix_size;
+            let spriteWidth = fix_size.spriteWidth;
+            let spriteHeight = fix_size.spriteHeight;
+
+            let sprite = new cc.Scale9Sprite();
+            sprite.setAnchorPoint(0.5, 0.5);
+            sprite.setPosition(container_size.spriteWidth * 0.5, container_size.spriteHeight * 0.5);
+            spriteFrame.__sprite = sprite;
+
+            container.addChild(sprite, i - max_index);
+
+            this._applySpriteFrame(spriteFrame);
+            sprite.setContentSize(spriteWidth, spriteHeight);
+        }
+    },
+
+
+    _c_fixSpriteFrameSize: function (richTextElement, spriteFrame)
+    {
+        let spriteRect = spriteFrame.getRect();
+        let scaleFactor = 1;
+        let spriteWidth = spriteRect.width;
+        let spriteHeight = spriteRect.height;
+        let expectWidth = richTextElement.style.imageWidth;
+        let expectHeight = richTextElement.style.imageHeight;
+
+        //follow the original rule, expectHeight must less then lineHeight
+        if (expectHeight > 0 && expectHeight < this.lineHeight) {
+            scaleFactor = expectHeight / spriteHeight;
+            spriteWidth = spriteWidth * scaleFactor;
+            spriteHeight = spriteHeight * scaleFactor;
+        }
+        else {
+            scaleFactor = this.lineHeight / spriteHeight;
+            spriteWidth = spriteWidth * scaleFactor;
+            spriteHeight = spriteHeight * scaleFactor;
+        }
+
+        if (expectWidth > 0) spriteWidth = expectWidth;
+
+        return {
+            spriteRect: spriteRect,
+            scaleFactor: scaleFactor,
+            spriteWidth: spriteWidth,
+            spriteHeight: spriteHeight,
+            expectWidth: expectWidth,
+            expectHeight: expectHeight
+        };
     },
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CUSTOM end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 });
