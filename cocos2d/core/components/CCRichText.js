@@ -540,6 +540,7 @@ var RichText = cc.Class({
         let spriteFrameName = richTextElement.style.src;
         let image_src = this._c_parseImageSrc(spriteFrameName);
         let sf_data = this._c_getSpriteFrameData(richTextElement, image_src);
+        if (0 > sf_data.max_index) return ;
         let spriteFrame = sf_data.frames[sf_data.max_index].frame;//this.imageAtlas.getSpriteFrame(spriteFrameName);
         if (spriteFrame) {
             let sprite = new cc.Scale9Sprite();
