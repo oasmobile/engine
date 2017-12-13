@@ -586,7 +586,7 @@ var RichText = cc.Class({
     _updateRichText: function () {
         if (!this.enabled) return;
 
-        var newTextArray = cc.htmlTextParser.parse(this.string);
+        var newTextArray = cc.htmlTextParser.parse(`${this.string}`);
         if (!this._needsUpdateTextLayout(newTextArray)) {
             this._textArray = newTextArray;
             this._updateLabelSegmentTextAttributes();
