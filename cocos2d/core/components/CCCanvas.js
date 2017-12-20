@@ -303,7 +303,7 @@ var Canvas = cc.Class({
 
         let width = frame_size.width;
         let height = frame_size.height;
-        if (width > frame_size.height)
+        if (width < frame_size.height)
         {
             width = frame_size.height;
             height = frame_size.width;
