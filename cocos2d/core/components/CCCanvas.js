@@ -253,6 +253,7 @@ var Canvas = cc.Class({
         this.alignWithScreen();
     },
 
+    /*
     applySettings: function () {
         var ResolutionPolicy = cc.ResolutionPolicy;
         var policy;
@@ -277,6 +278,42 @@ var Canvas = cc.Class({
         else {
             cc.view.setDesignResolutionSize(designRes.width, designRes.height, policy);
         }
+    }//*/
+
+    applySettings: function ()
+    {
+        let design_res_size = this._c_getFixedDesignResolutionSize();
+        cc.info(`Fixed Design Resolution Size`, `${cc.view.getFrameSize()} | ${design_res_size}`);
+        if (CC_EDITOR)
+        {
+            cc.engine.setDesignResolutionSize(design_res_size.width, design_res_size.height);
+        }
+        else
+        {
+            cc.view.setDesignResolutionSize(design_res_size.width, design_res_size.height, cc.ResolutionPolicy.SHOW_ALL);
+        }
+    },
+
+    _c_getFixedDesignResolutionSize: function ()
+    {
+        if (CC_EDITOR) return this._designResolution;
+
+        let frame_size = cc.view.getFrameSize();
+        let design_res_size = this._designResolution;
+
+        let width = frame_size.width;
+        let height = frame_size.height;
+        if (width > frame_size.height)
+        {
+            width = frame_size.height;
+            height = frame_size.width;
+        }
+        let scale_factor = Math.min(width / design_res_size.width, height / design_res_size.height);
+
+        return cc.size(
+            parseInt(Math.floor(frame_size.width / scale_factor)),
+            parseInt(Math.floor(frame_size.height / scale_factor))
+        );
     }
 });
 
