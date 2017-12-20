@@ -1,3 +1,0 @@
-cocos2d/core/components/CCRichText.js
-cocos2d/core/components/CCCanvas.js
-cocos2d/core/label/CCHtmlTextParser.js
