@@ -282,7 +282,7 @@ var Canvas = cc.Class({
 
     applySettings: function ()
     {
-        let design_res_size = this.getFixedDesignResolutionSize();
+        let design_res_size = this._c_getFixedDesignResolutionSize();
         cc.info(`Fixed Design Resolution Size`, `${cc.view.getFrameSize()} | ${design_res_size}`);
         if (CC_EDITOR)
         {
@@ -294,7 +294,7 @@ var Canvas = cc.Class({
         }
     },
 
-    getFixedDesignResolutionSize: function ()
+    _c_getFixedDesignResolutionSize: function ()
     {
         if (CC_EDITOR) return this._designResolution;
 
