@@ -301,14 +301,7 @@ var Canvas = cc.Class({
         let frame_size = cc.view.getFrameSize();
         let design_res_size = this._designResolution;
 
-        let width = frame_size.width;
-        let height = frame_size.height;
-        if (width < frame_size.height)
-        {
-            width = frame_size.height;
-            height = frame_size.width;
-        }
-        let scale_factor = Math.min(width / design_res_size.width, height / design_res_size.height);
+        let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
 
         return cc.size(
             parseInt(Math.floor(frame_size.width / scale_factor)),
