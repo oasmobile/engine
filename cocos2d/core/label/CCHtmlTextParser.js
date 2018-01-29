@@ -39,7 +39,10 @@ cc.HtmlTextParser = function() {
 
 cc.HtmlTextParser.prototype = {
     constructor: cc.HtmlTextParser,
-    parse: function(htmlString) {
+    parse: function(html_string) {
+
+        var htmlString = `${html_string}`;
+
         this._resultObjectArray = [];
         this._stack = [];
 
