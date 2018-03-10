@@ -708,6 +708,9 @@ var game = {
         if (cc._renderType === game.RENDER_TYPE_WEBGL) {
             var opts = {
                 'stencil': true,
+                // MSAA is causing serious performance dropdown on some browsers,
+                // it's temporarily desactivated until we found correct way to let user customize it.
+                'antialias': false,
                 'alpha': cc.macro.ENABLE_TRANSPARENT_CANVAS
             };
             if (isWeChatGame) {
@@ -785,12 +788,12 @@ var game = {
         }
 
         if (navigator.userAgent.indexOf("MicroMessenger") > -1) {
-            win.onfocus = function(){ onShow() };
+            win.onfocus = onShow;
         }
 
         if (CC_WECHATGAME) {
-            wx.onShow = onShow;
-            wx.onHide = onHidden;
+            wx.onShow(onShow);
+            wx.onHide(onHidden);
         }
 
         if ("onpageshow" in window && "onpagehide" in window) {
