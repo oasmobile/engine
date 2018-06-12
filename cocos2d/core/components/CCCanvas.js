@@ -283,31 +283,47 @@ var Canvas = cc.Class({
 
     applySettings: function ()
     {
-        let design_res_size = this._c_getFixedDesignResolutionSize();
-        cc.info(`Fixed Design Resolution Size`, `${cc.view.getFrameSize()} | ${design_res_size}`);
+        let design_resolution = this._c_getFixedDesignResolution();
+        cc.info(`Fixed Design Resolution Size`, `(${cc.view.getFrameSize().width}, ${cc.view.getFrameSize().height})`
+            + ` | (${design_resolution.size.width}, ${design_resolution.size.height})`
+            + ` | ${design_resolution.policy} | ${design_resolution.factor}`);
         if (CC_EDITOR)
         {
-            cc.engine.setDesignResolutionSize(design_res_size.width, design_res_size.height);
+            cc.engine.setDesignResolutionSize(design_resolution.size.width, design_resolution.size.height);
         }
         else
         {
-            cc.view.setDesignResolutionSize(design_res_size.width, design_res_size.height, cc.ResolutionPolicy.SHOW_ALL);
+            cc.view.setDesignResolutionSize(design_resolution.size.width, design_resolution.size.height, design_resolution.policy);
         }
     },
 
-    _c_getFixedDesignResolutionSize: function ()
+    _c_getFixedDesignResolution: function ()
     {
-        if (CC_EDITOR) return this._designResolution;
+        if (CC_EDITOR) return {
+            size: this._designResolution,
+            policy: cc.ResolutionPolicy.SHOW_ALL,
+            factor: Math.floor(this._designResolution.height / this._designResolution.width * 100)
+        };
+
 
         let frame_size = cc.view.getFrameSize();
         let design_res_size = this._designResolution;
 
-        let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
+        let size = null;
+        let policy = cc.ResolutionPolicy.SHOW_ALL;
 
-        return cc.size(
-            parseInt(Math.floor(frame_size.width / scale_factor)),
-            parseInt(Math.floor(frame_size.height / scale_factor))
-        );
+        let f_h_w_factor = Math.floor(frame_size.height / frame_size.width * 100);
+        if (f_h_w_factor > 75)
+        {
+            size = cc.size(1024, 768);
+        }
+        else
+        {
+            let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
+            size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
+        }
+
+        return {size: size, policy: policy, factor: f_h_w_factor};
     }
 });
 
