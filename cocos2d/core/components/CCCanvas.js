@@ -71,7 +71,10 @@ var Canvas = cc.Class({
          * @property {Canvas} instance
          * @static
          */
-        instance: null
+        instance: null,
+
+
+        _c_design_resolution: null
     },
 
     properties: {
@@ -283,8 +286,9 @@ var Canvas = cc.Class({
 
     applySettings: function ()
     {
-        let design_resolution = this._c_getFixedDesignResolution();
-        cc.info(`Fixed Design Resolution Size`, `(${cc.view.getFrameSize().width}, ${cc.view.getFrameSize().height})`
+        if (null == Canvas._c_design_resolution) Canvas._c_design_resolution = this._c_getFixedDesignResolution();
+        let design_resolution = Canvas._c_design_resolution;
+        cc.info(`Fixed Design Resolution`, `(${cc.view.getFrameSize().width}, ${cc.view.getFrameSize().height})`
             + ` | (${design_resolution.size.width}, ${design_resolution.size.height})`
             + ` | ${design_resolution.policy} | ${design_resolution.factor}`);
         if (CC_EDITOR)
@@ -322,6 +326,22 @@ var Canvas = cc.Class({
             let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
             size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
         }
+
+
+        // TODO CW 待处理，iPhone X暂时黑边处理
+        let safe_area = cc.director.getSafeAreaRect();
+        if (safe_area.x > 0)
+        {
+            cc.view.setDesignResolutionSize(size.width, size.height, policy);
+            safe_area = cc.director.getSafeAreaRect();
+
+            let fix_width = safe_area.x * 2;
+            frame_size.width -= fix_width;
+
+            let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
+            size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
+        }
+
 
         return {size: size, policy: policy, factor: f_h_w_factor};
     }
