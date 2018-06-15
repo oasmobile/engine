@@ -329,17 +329,20 @@ var Canvas = cc.Class({
 
 
         // TODO CW 待处理，iPhone X暂时黑边处理
-        let safe_area = cc.director.getSafeAreaRect();
-        if (safe_area.x > 0)
+        if (cc.sys.isMobile)
         {
-            cc.view.setDesignResolutionSize(size.width, size.height, policy);
-            safe_area = cc.director.getSafeAreaRect();
+            let safe_area = cc.director.getSafeAreaRect();
+            if (safe_area.x > 0)
+            {
+                cc.view.setDesignResolutionSize(size.width, size.height, policy);
+                safe_area = cc.director.getSafeAreaRect();
 
-            let fix_width = safe_area.x * 2;
-            frame_size.width -= fix_width;
+                let fix_width = safe_area.x * 2;
+                frame_size.width -= fix_width;
 
-            let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
-            size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
+                let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
+                size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
+            }
         }
 
 
