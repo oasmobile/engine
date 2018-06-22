@@ -316,10 +316,14 @@ var Canvas = cc.Class({
         let size = null;
         let policy = cc.ResolutionPolicy.SHOW_ALL;
 
-        let f_h_w_factor = Math.floor(frame_size.height / frame_size.width * 100);
-        if (f_h_w_factor > 75)
+        let f_h_w_factor = Math.floor(frame_size.height / frame_size.width * 1e4);
+        if (f_h_w_factor > 7500) // 3:4
         {
             size = cc.size(1024, 768);
+        }
+        else if (f_h_w_factor < 5625) // 9:16
+        {
+            size = cc.size(1334, 750);
         }
         else
         {
@@ -328,7 +332,7 @@ var Canvas = cc.Class({
         }
 
 
-        // TODO CW 待处理，iPhone X暂时黑边处理
+        /* TODO CW 待处理，iPhone X暂时黑边处理
         if (cc.sys.isMobile)
         {
             let safe_area = cc.director.getSafeAreaRect();
@@ -343,7 +347,7 @@ var Canvas = cc.Class({
                 let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
                 size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
             }
-        }
+        }//*/
 
 
         return {size: size, policy: policy, factor: f_h_w_factor};
