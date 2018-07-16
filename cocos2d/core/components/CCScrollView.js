@@ -332,6 +332,12 @@ var ScrollView = cc.Class({
             default: true,
             animatable: false,
             tooltip: CC_DEV && 'i18n:COMPONENT.scrollview.cancelInnerEvents'
+        },
+
+
+        ignore_delta_move: {
+            default: 15,
+            min: 0
         }
     },
 
@@ -718,7 +724,7 @@ var ScrollView = cc.Class({
     getContentPosition: function () {
         return this.content.getPosition();
     },
-    
+
     /**
      * !#en Query whether the user is currently dragging the ScrollView to scroll it
      * !#zh 用户是否在拖拽当前滚动视图
@@ -738,7 +744,7 @@ var ScrollView = cc.Class({
     isAutoScrolling: function () {
         return this._autoScrolling;
     },
-    
+
     //private methods
     _registerEvent: function () {
         this.node.on(cc.Node.EventType.TOUCH_START, this._onTouchBegan, this, true);
@@ -967,7 +973,7 @@ var ScrollView = cc.Class({
 
         var deltaMove = cc.pSub(touch.getLocation(), touch.getStartLocation());
         //FIXME: touch move delta should be calculated by DPI.
-        if (cc.pLength(deltaMove) > 7) {
+        if (cc.pLength(deltaMove) > this.ignore_delta_move) {
             if (!this._touchMoved && event.target !== this.node) {
                 // Simulate touch cancel for target node
                 var cancelEvent = new cc.Event.EventTouch(event.getTouches(), event.bubbles);
@@ -997,7 +1003,7 @@ var ScrollView = cc.Class({
             this._stopPropagationIfTargetIsMe(event);
         }
     },
-    
+
     _onTouchCancelled: function(event, captureListeners) {
         if (!this.enabledInHierarchy) return;
         if (this._hasNestedViewGroup(event, captureListeners)) return;
