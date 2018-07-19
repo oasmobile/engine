@@ -4235,6 +4235,8 @@ var spine;
 					return path;
 				}
 			}
+
+			skin.addNotSupportedAttachment(name);
 			return null;
 		};
 		SkeletonJson.prototype.readVertices = function (map, attachment, verticesLength) {
@@ -4454,7 +4456,12 @@ var spine;
 							var timelineMap = slotMap[timelineName];
 							var attachment = skin.getAttachment(slotIndex, timelineName);
 							if (attachment == null)
-								throw new Error("Deform attachment not found: " + timelineMap.name);
+                            {
+                            	// 跳过不支持的clipping附件，native上是可以正常支持的
+                            	if (skin.isNotSupportedAttachment(timelineName)) continue;
+
+                                throw new Error("Deform attachment not found: " + timelineMap.name);
+                            }
 							var weighted = attachment.bones != null;
 							var vertices = attachment.vertices;
 							var deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
@@ -4632,7 +4639,8 @@ var spine;
 (function (spine) {
 	var Skin = (function () {
 		function Skin(name) {
-			this.attachments = new Array();
+            this.attachments = new Array();
+            this.notSupportedAttachments = new Array();
 			if (name == null)
 				throw new Error("name cannot be null.");
 			this.name = name;
@@ -4671,6 +4679,12 @@ var spine;
 				slotIndex++;
 			}
 		};
+		Skin.prototype.addNotSupportedAttachment = function (name) {
+            this.notSupportedAttachments[name] = 1;
+        };
+        Skin.prototype.isNotSupportedAttachment = function (name) {
+            return (this.notSupportedAttachments[name]);
+        };
 		return Skin;
 	}());
 	spine.Skin = Skin;
