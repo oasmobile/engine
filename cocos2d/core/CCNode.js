@@ -390,6 +390,7 @@ var Node = cc.Class({
         _localZOrder: 0,
         _globalZOrder: 0,
         _opacityModifyRGB: false,
+        _hasAction: false,
 
         // internal properties
 
@@ -1103,8 +1104,8 @@ var Node = cc.Class({
         var actionManager = ActionManagerExist ? cc.director.getActionManager() : null;
         if (active) {
             // activate
-            actionManager && actionManager.resumeTarget(this);
-            eventManager.resumeTarget(this);
+            if (this._hasAction) actionManager && actionManager.resumeTarget(this);
+            if (this._touchListener || this._mouseListener) eventManager.resumeTarget(this);
             if (this._touchListener) {
                 var mask = this._touchListener.mask = _searchMaskInParent(this);
                 if (this._mouseListener) {
@@ -1117,8 +1118,8 @@ var Node = cc.Class({
         }
         else {
             // deactivate
-            actionManager && actionManager.pauseTarget(this);
-            eventManager.pauseTarget(this);
+            if (this._hasAction) actionManager && actionManager.pauseTarget(this);
+            if (this._touchListener || this._mouseListener) eventManager.pauseTarget(this);
         }
     },
 
@@ -1150,9 +1151,9 @@ var Node = cc.Class({
         if (!this._activeInHierarchy) {
             // deactivate ActionManager and EventManager by default
             if (ActionManagerExist) {
-                cc.director.getActionManager().pauseTarget(this);
+                if (this._hasAction) cc.director.getActionManager().pauseTarget(this);
             }
-            eventManager.pauseTarget(this);
+            if (this._touchListener || this._mouseListener) eventManager.pauseTarget(this);
         }
 
         var children = this._children;
@@ -1478,6 +1479,9 @@ var Node = cc.Class({
             this._sgNode._owner = this;
         }
         cc.director.getActionManager().addAction(action, this, false);
+
+        this._hasAction = true;
+
         return action;
     } : emptyFunc,
 
@@ -2493,12 +2497,12 @@ var Node = cc.Class({
         // update ActionManager and EventManager because sgNode maybe changed
         var actionManager = ActionManagerExist ? cc.director.getActionManager() : null;
         if (this._activeInHierarchy) {
-            actionManager && actionManager.resumeTarget(this);
-            eventManager.resumeTarget(this);
+            if (this._hasAction) actionManager && actionManager.resumeTarget(this);
+            if (this._touchListener || this._mouseListener) eventManager.resumeTarget(this);
         }
         else {
-            actionManager && actionManager.pauseTarget(this);
-            eventManager.pauseTarget(this);
+            if (this._hasAction) actionManager && actionManager.pauseTarget(this);
+            if (this._touchListener || this._mouseListener) eventManager.pauseTarget(this);
         }
     },
 
@@ -2536,12 +2540,12 @@ var Node = cc.Class({
 
         var actionManager = cc.director.getActionManager();
         if (this._activeInHierarchy) {
-            actionManager && actionManager.resumeTarget(this);
-            eventManager.resumeTarget(this);
+            if (this._hasAction) actionManager && actionManager.resumeTarget(this);
+            if (this._touchListener || this._mouseListener) eventManager.resumeTarget(this);
         }
         else {
-            actionManager && actionManager.pauseTarget(this);
-            eventManager.pauseTarget(this);
+            if (this._hasAction) actionManager && actionManager.pauseTarget(this);
+            if (this._touchListener || this._mouseListener) eventManager.pauseTarget(this);
         }
     },
 
