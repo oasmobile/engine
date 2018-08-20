@@ -120,6 +120,7 @@ var LifeCycleInvoker = cc.Class({
     add: null,
     remove: null,
     invoke: null,
+    size: null,
 });
 
 function compareOrder (a, b) {
@@ -159,6 +160,9 @@ var OneOffInvoker = cc.Class({
             this._invoke(compsPos);
             compsPos.array.length = 0;
         }
+    },
+    size () {
+        return this._neg.array.length + this._zero.array.length + this._pos.array.length;
     },
 });
 
@@ -353,12 +357,14 @@ var ComponentScheduler = cc.Class({
         if (cc.engine.isPlaying || comp.constructor._executeInEditMode) {
             if (!(comp._objFlags & IsOnEnableCalled)) {
                 if (comp.onEnable) {
-                    if (invoker) {
+                    if (invoker) 
+                    {
                         invoker.add(comp);
                         enableInEditor(comp);
                         return;
                     }
-                    else {
+                    else 
+                    {
                         callOnEnableInTryCatch(comp);
 
                         var deactivatedDuringOnEnable = !comp.node._activeInHierarchy;

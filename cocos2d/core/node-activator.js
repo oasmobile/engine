@@ -65,6 +65,9 @@ var UnsortedInvoker = cc.Class({
         this._invoke(this._zero);
         this._zero.array.length = 0;
     },
+    size () {
+        return this._zero.array.length;
+    }
 });
 
 var invokePreload = CompScheduler.createInvokeImpl(

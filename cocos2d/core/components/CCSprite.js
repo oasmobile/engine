@@ -551,7 +551,7 @@ var Sprite = cc.Class({
         }
 
         var spriteFrame = this._spriteFrame;
-        if (spriteFrame) {
+        if (spriteFrame && spriteFrame._name != '') {
             if (!keepInsets) {
                 this._applySpriteFrameInsets();
             }
