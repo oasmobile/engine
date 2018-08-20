@@ -288,9 +288,7 @@ var Canvas = cc.Class({
     {
         if (null == Canvas._c_design_resolution) Canvas._c_design_resolution = this._c_getFixedDesignResolution();
         let design_resolution = Canvas._c_design_resolution;
-        cc.info(`Fixed Design Resolution`, `(${cc.view.getFrameSize().width}, ${cc.view.getFrameSize().height})`
-            + ` | (${design_resolution.size.width}, ${design_resolution.size.height})`
-            + ` | ${design_resolution.policy} | ${design_resolution.factor}`);
+
         if (CC_EDITOR)
         {
             cc.engine.setDesignResolutionSize(design_resolution.size.width, design_resolution.size.height);
@@ -299,6 +297,16 @@ var Canvas = cc.Class({
         {
             cc.view.setDesignResolutionSize(design_resolution.size.width, design_resolution.size.height, design_resolution.policy);
         }
+
+        let log_info = `(${cc.view.getFrameSize().width}, ${cc.view.getFrameSize().height})`
+            + ` | (${design_resolution.size.width}, ${design_resolution.size.height})`
+            + ` | ${design_resolution.policy} | ${design_resolution.factor}`;
+        if (cc.sys.isMobile)
+        {
+            let safe_area = cc.director.getSafeAreaRect();
+            log_info += ` | ${safe_area.x} | ${safe_area.y} | ${safe_area.width} | ${safe_area.height}`;
+        }
+        cc.info(`Fixed Design Resolution`, log_info);
     },
 
     _c_getFixedDesignResolution: function ()
@@ -320,11 +328,11 @@ var Canvas = cc.Class({
         if (f_h_w_factor > 7500) // 3:4
         {
             size = cc.size(1024, 768);
-        }
+        }/*
         else if (f_h_w_factor < 5625) // 9:16
         {
             size = cc.size(1334, 750);
-        }
+        }//*/
         else
         {
             let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
@@ -332,7 +340,6 @@ var Canvas = cc.Class({
         }
 
 
-        /* TODO CW 待处理，iPhone X暂时黑边处理
         if (cc.sys.isMobile)
         {
             let safe_area = cc.director.getSafeAreaRect();
@@ -347,7 +354,7 @@ var Canvas = cc.Class({
                 let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
                 size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
             }
-        }//*/
+        }
 
 
         return {size: size, policy: policy, factor: f_h_w_factor};
