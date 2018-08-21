@@ -328,32 +328,11 @@ var Canvas = cc.Class({
         if (f_h_w_factor > 7500) // 3:4
         {
             size = cc.size(1024, 768);
-        }/*
-        else if (f_h_w_factor < 5625) // 9:16
-        {
-            size = cc.size(1334, 750);
-        }//*/
+        }
         else
         {
             let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
             size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
-        }
-
-
-        if (cc.sys.isMobile)
-        {
-            let safe_area = cc.director.getSafeAreaRect();
-            if (safe_area.x > 0)
-            {
-                cc.view.setDesignResolutionSize(size.width, size.height, policy);
-                safe_area = cc.director.getSafeAreaRect();
-
-                let fix_width = safe_area.x * 2;
-                frame_size.width -= fix_width;
-
-                let scale_factor = Math.min(frame_size.width / design_res_size.width, frame_size.height / design_res_size.height);
-                size = cc.size(Math.floor(frame_size.width / scale_factor), Math.floor(frame_size.height / scale_factor));
-            }
         }
 
 
