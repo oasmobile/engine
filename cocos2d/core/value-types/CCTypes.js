@@ -192,3 +192,15 @@ cc.VerticalTextAlignment = cc.Enum({
     CENTER: 1,
     BOTTOM: 2
 });
+
+
+cc.AudioCategory = cc.Enum({
+    /**
+     * @property {Number} AMBIENT
+     */
+    AMBIENT: 0,
+    /**
+     * @property {Number} SOLO_AMBIENT
+     */
+    SOLO_AMBIENT: 1,
+});
