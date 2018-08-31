@@ -595,9 +595,6 @@ var RichText = cc.Class({
 
         this._textArray = newTextArray;
 
-        let image_count = this._c_loadImages();
-        if (0 < image_count) return ;
-
         this._c_updateRichText();
     },
 
@@ -888,7 +885,7 @@ var RichText = cc.Class({
 
         for (let i = 0; i < src.length; ++i)
         {
-            let frame = cc.loader.getRes(src[i], cc.SpriteFrame);
+            let frame = this._c_getSpriteFrame(src[i]);
             if (!frame) continue;
             let fix_size = this._c_fixSpriteFrameSize(richTextElement, frame);
             sprite_frames.push({frame: frame, fix_size: fix_size});
@@ -907,6 +904,12 @@ var RichText = cc.Class({
         }
 
         return {frames:sprite_frames, max_index: max_index};
+    },
+
+
+    _c_getSpriteFrame: function (src)
+    {
+        return cc.loader.getRes(src, cc.SpriteFrame);
     },
 
 
