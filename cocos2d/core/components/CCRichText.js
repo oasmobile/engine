@@ -395,6 +395,7 @@ var RichText = cc.Class({
     },
 
     _updateRichTextWithMaxWidth: function (labelString, labelWidth, styleIndex) {
+        cc.log(`cocos2d: CCRichText: updateRichTextWithMaxWidth: labelString = ${labelString}, labelWidth = ${labelWidth}, styleIndex = ${styleIndex}`);
         var fragmentWidth = labelWidth;
         var labelSegment;
 
@@ -432,6 +433,7 @@ var RichText = cc.Class({
                 fragmentWidth,
                 this.maxWidth,
                 this._measureText(styleIndex));
+            cc.log(`cocos2d: CCRichText: updateRichTextWithMaxWidth fragmentWidth > maxWidth: fragments length = ${fragments.length}`);
             for (var k = 0; k < fragments.length; ++k) {
                 var splitString = fragments[k];
 
@@ -607,6 +609,7 @@ var RichText = cc.Class({
         var label;
         var labelSize;
 
+        cc.log("cocos2d: CCRichText: this._textArray.length = " + this._textArray.length);
         for (var i = 0; i < this._textArray.length; ++i) {
             var richTextElement = this._textArray[i];
             var text = richTextElement.text;
@@ -623,6 +626,7 @@ var RichText = cc.Class({
             }
             var multilineTexts = text.split("\n");
 
+            cc.log(`cocos2d: CCRichText: mulmultilineTexts for ${i} length = ${multilineTexts.length}`);
             for (var j = 0; j < multilineTexts.length; ++j) {
                 var labelString = multilineTexts[j];
                 if (labelString === "") {
