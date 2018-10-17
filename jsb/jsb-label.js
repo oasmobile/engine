@@ -285,6 +285,10 @@ cc.Label = function (string, fontHandle, spriteFrame, fontSize) {
     label._labelType = type;
     return label;
 };
+
+// Note: jsb静态方法转接，用于预览Label的ContentSize
+cc.Label.previewContentSize = jsbLabel.previewContentSize;
+
 cc.Label.Type = cc.Enum({
     TTF: 0,
     BMFont: 1,

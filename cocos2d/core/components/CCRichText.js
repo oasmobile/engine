@@ -301,6 +301,19 @@ var RichText = cc.Class({
     _measureText: function (styleIndex, string) {
         var self = this;
         var func = function (string) {
+            if (CC_JSB && !self.font) {
+                var textStyle = null;
+                if (self._textArray[styleIndex]) {
+                    textStyle = self._textArray[styleIndex].style;
+                }
+                var fontDefination = {
+                    fontSize: self.fontSize,
+                    verticalAlign: VerticalAlign.CENTER,
+                    fillStyle: (textStyle && textStyle.color) ? self._convertLiteralColorValue(textStyle.color) : self.node.color,
+                };
+                var size = _ccsg.Label.previewContentSize(string, fontDefination);
+                return size.width;
+            }
             var label;
             if (self._labelSegmentsCache.length === 0) {
                 label = self._createFontLabel(string);
