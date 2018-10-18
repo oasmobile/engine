@@ -634,7 +634,7 @@ var RichText = cc.Class({
                     continue;
                 }
             }
-            var multilineTexts = text.split("\n");
+            var multilineTexts = text.split(/\r\n|\n|\n\r/);
 
             for (var j = 0; j < multilineTexts.length; ++j) {
                 var labelString = multilineTexts[j];
