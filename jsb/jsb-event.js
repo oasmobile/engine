@@ -98,7 +98,7 @@ cc.eventManager.removeListeners = function (target, recursive) {
     if (target instanceof cc._BaseNode) {
         target = target._sgNode;
     }
-    
+
     if (target instanceof _ccsg.Node || cc.js.isNumber(target)) {
         this._removeListeners(target, recursive || false);
     }
@@ -118,6 +118,21 @@ cc.eventManager.pauseTarget = function (target, recursive) {
         return;
     }
 
+    if(!sgTarget && sgTarget !== target) {
+        let logName = function (node)
+        {
+            if(!node) {
+                return "";
+            }
+            if(node.parent) {
+                return logName(node.parent)+","+node.name;
+            }
+            else {
+                return "";
+            }
+        };
+        cc.info('PauseTarget node:'+logName(target));
+    }
     if (sgTarget !== target && !sgTarget.isRunning()) {
         var originOnEnter = sgTarget.onEnter;
         sgTarget.onEnter = function () {
